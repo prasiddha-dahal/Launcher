@@ -15,6 +15,10 @@ class HomeController extends GetxController{
     isLoading.value = false;
   }
 
+  void lauchApp(String packageName) {
+    InstalledApps.startApp(packageName);
+  }
+
   @override
   void onInit() {
     // TODO: implement onInit

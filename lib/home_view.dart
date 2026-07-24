@@ -23,6 +23,9 @@ class HomeView extends StatelessWidget {
                 final app = homeController.apps[index];
                 return ListTile(
                   title: Text("${app.name}"),
+                  onTap: (){
+                    homeController.lauchApp("${app.packageName}");
+                  },
                 );
               } 
               );
