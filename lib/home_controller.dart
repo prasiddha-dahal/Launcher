@@ -6,6 +6,7 @@ class HomeController extends GetxController{
 
   var isLoading = false.obs;
   var apps = <AppInfo>[].obs;
+  var showAppList = false.obs;
 
   Future loadApp() async{
     isLoading.value = true;
@@ -15,8 +16,16 @@ class HomeController extends GetxController{
     isLoading.value = false;
   }
 
-  void lauchApp(String packageName) {
+  void launchApp(String packageName) {
     InstalledApps.startApp(packageName);
+  }
+
+  void openAppList(){
+    showAppList.value = true;
+  }
+
+  void closeAppList(){
+    showAppList.value = false;
   }
 
   @override

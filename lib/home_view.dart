@@ -11,50 +11,88 @@ class HomeView extends StatelessWidget {
     final HomeController homeController = Get.put(HomeController());
     final ClockController clockController = Get.put(ClockController());
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
+    Widget showClock() {
+      return Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 40),
-            Obx(() => Text(
-                  clockController.currentTime.value,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      fontWeight: FontWeight.w300),
-                )),
-            Obx(() => Text(
-                  clockController.currentDate.value,
-                  style: const TextStyle(color: Colors.grey, fontSize: 16),
-                )),
-            const SizedBox(height: 20),
-            Expanded(
-              child: Obx(() {
-                if (homeController.isLoading.value) {
-                  return const Center(
-                    child: Text('Loading...',
-                        style: TextStyle(color: Colors.white)),
-                  );
-                }
-                return ListView.builder(
-                  itemCount: homeController.apps.length,
-                  itemBuilder: (context, index) {
-                    final app = homeController.apps[index];
-                    return ListTile(
-                      title: Text(
-                        app.name,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 18),
-                      ),
-                      onTap: () => homeController.lauchApp(app.packageName),
-                    );
-                  },
-                );
-              }),
+            Obx(
+              () => Text(
+                clockController.currentTime.value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 48,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+            Obx(
+              () => Text(
+                clockController.currentDate.value,
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
+              ),
             ),
           ],
         ),
+      );
+    }
+
+    Widget showApp(){
+      return Obx(() {
+        if (homeController.isLoading.value) {
+          return Center(
+            child: Text(
+              'Loading...',
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        }
+        return NotificationListener<OverscrollNotification>(
+          onNotification: (notification){
+            if(notification.overscroll < -20){
+              homeController.closeAppList();
+            }
+            return true;
+          },
+          child: ListView.builder(
+            itemCount: homeController.apps.length,
+            itemBuilder: (context, index) {
+              final app = homeController.apps[index];
+              return ListTile(
+                title: Text(
+                  app.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () => homeController.launchApp(app.packageName),
+              );
+            },
+          ),
+        );
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onVerticalDragEnd: (details) {
+            if(details.primaryVelocity == null){
+              return;
+            }
+            if(details.primaryVelocity! < -200){
+              homeController.openAppList(); // swipe up
+            }else if(details.primaryVelocity! > 200){
+              homeController.closeAppList(); // swipe down
+            }
+          },
+          child: Obx((){
+            return homeController.showAppList.value ? showApp() : showClock();
+          }),
+        )  
       ),
     );
   }
