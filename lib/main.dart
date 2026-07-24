@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:launcher/controller_binding.dart';
 import 'package:launcher/home_view.dart';
 
 void main() {
@@ -11,12 +13,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
       home: HomeView(), 
+      initialBinding: ControllerBinding(),
     );
 
   }
