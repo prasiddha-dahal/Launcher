@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:launcher/clock_controller.dart';
 import 'package:launcher/home_controller.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -73,27 +74,34 @@ class HomeView extends StatelessWidget {
         );
       });
     }
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onVerticalDragEnd: (details) {
-            if(details.primaryVelocity == null){
-              return;
-            }
-            if(details.primaryVelocity! < -200){
-              homeController.openAppList(); // swipe up
-            }else if(details.primaryVelocity! > 200){
-              homeController.closeAppList(); // swipe down
-            }
-          },
-          child: Obx((){
-            return homeController.showAppList.value ? showApp() : showClock();
-          }),
-        )  
+return Scaffold(
+  backgroundColor: Colors.transparent,
+  body: SafeArea(
+    child: SlidingUpPanel(
+      minHeight: 40,   // small visible strip instead of 0
+      maxHeight: MediaQuery.of(context).size.height * 0.9,
+      panel: showApp(),
+      body: showClock(),
+      backdropEnabled: true,
+      panelBuilder: (scrollController) => showApp(),
+      collapsed: Container(
+        decoration: const BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Center(
+          child: Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
       ),
-    );
+    ),
+  ),
+);
   }
 }
