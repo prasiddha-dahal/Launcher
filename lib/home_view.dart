@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:launcher/clock_controller.dart';
 import 'package:launcher/home_controller.dart';
@@ -10,6 +11,38 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final HomeController homeController = Get.put(HomeController());
     final ClockController clockController = Get.put(ClockController());
+    Widget showTopApps() {
+      return Obx(() {
+        if (homeController.topApps.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Text(
+                'Top 3 apps you used today',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ...homeController.topApps.map((app) {
+              final minutes = app.usage.inMinutes;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  '${app.appName} — ${(minutes / 60).floor()}hr and ${minutes % 60} mins',
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              );
+            }),
+          ],
+        );
+      });
+    }
 
     Widget showClock() {
       return Center(
@@ -29,22 +62,21 @@ class HomeView extends StatelessWidget {
             Obx(
               () => Text(
                 clockController.currentDate.value,
-                style: const TextStyle(color: Colors.grey, fontSize: 16),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
+            Gap(40),
+            showTopApps(),
           ],
         ),
       );
     }
 
-    Widget showApp(){
+    Widget showApp() {
       return Obx(() {
         if (homeController.isLoading.value) {
           return Center(
-            child: Text(
-              'Loading...',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('Loading...', style: TextStyle(color: Colors.white)),
           );
         }
         return Column(
@@ -53,25 +85,27 @@ class HomeView extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 autofocus: true,
-                style: TextStyle(color: Colors.white, ),
-                onChanged: (query){
+                style: TextStyle(color: Colors.white),
+                onChanged: (query) {
                   homeController.filterApps(query);
                 },
                 decoration: InputDecoration(
                   hintText: "Search Apps",
                   hintStyle: TextStyle(color: Colors.grey),
                   filled: true,
-                  fillColor: Colors.white10
-
+                  fillColor: Colors.white10,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none
+                  )
                 ),
               ),
-            ),                  
-
+            ),
 
             Expanded(
               child: NotificationListener<OverscrollNotification>(
-                onNotification: (notification){
-                  if(notification.overscroll < -20){
+                onNotification: (notification) {
+                  if (notification.overscroll < -20) {
                     homeController.closeAppList();
                   }
                   return true;
@@ -105,19 +139,19 @@ class HomeView extends StatelessWidget {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onVerticalDragEnd: (details) {
-            if(details.primaryVelocity == null){
+            if (details.primaryVelocity == null) {
               return;
             }
-            if(details.primaryVelocity! < -200){
+            if (details.primaryVelocity! < -200) {
               homeController.openAppList(); // swipe up
-            }else if(details.primaryVelocity! > 200){
+            } else if (details.primaryVelocity! > 200) {
               homeController.closeAppList(); // swipe down
             }
           },
-          child: Obx((){
+          child: Obx(() {
             return homeController.showAppList.value ? showApp() : showClock();
           }),
-        )  
+        ),
       ),
     );
   }
