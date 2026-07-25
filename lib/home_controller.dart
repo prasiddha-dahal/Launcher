@@ -6,7 +6,9 @@ class HomeController extends GetxController{
 
   var isLoading = false.obs;
   var apps = <AppInfo>[].obs;
+  var filteredApps = <AppInfo>[].obs;
   var showAppList = false.obs;
+  var searchQuery = ''.obs;
 
   Future loadApp() async{
     isLoading.value = true;
@@ -26,6 +28,15 @@ class HomeController extends GetxController{
 
   void closeAppList(){
     showAppList.value = false;
+  }
+
+  void filterApps(String query){
+    searchQuery.value = query;
+    if(query.isEmpty){
+      filteredApps.value = apps;
+    } else {
+      filteredApps.value = apps.where((app)=>app.name.toLowerCase().contains(query.toLowerCase())).toList();
+    }
   }
 
   @override

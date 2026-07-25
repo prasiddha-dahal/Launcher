@@ -47,29 +47,53 @@ class HomeView extends StatelessWidget {
             ),
           );
         }
-        return NotificationListener<OverscrollNotification>(
-          onNotification: (notification){
-            if(notification.overscroll < -20){
-              homeController.closeAppList();
-            }
-            return true;
-          },
-          child: ListView.builder(
-            itemCount: homeController.apps.length,
-            itemBuilder: (context, index) {
-              final app = homeController.apps[index];
-              return ListTile(
-                title: Text(
-                  app.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                style: TextStyle(color: Colors.white, ),
+                onChanged: (query){
+                  homeController.filterApps(query);
+                },
+                decoration: InputDecoration(
+                  hintText: "Search Apps",
+                  hintStyle: TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white10
+
                 ),
-                onTap: () => homeController.launchApp(app.packageName),
-              );
-            },
-          ),
+              ),
+            ),                  
+
+
+            Expanded(
+              child: NotificationListener<OverscrollNotification>(
+                onNotification: (notification){
+                  if(notification.overscroll < -20){
+                    homeController.closeAppList();
+                  }
+                  return true;
+                },
+                child: ListView.builder(
+                  itemCount: homeController.filteredApps.length,
+                  itemBuilder: (context, index) {
+                    final app = homeController.filteredApps[index];
+                    return ListTile(
+                      title: Text(
+                        app.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      onTap: () => homeController.launchApp(app.packageName),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         );
       });
     }
