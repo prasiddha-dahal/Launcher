@@ -15,6 +15,7 @@ class HomeController extends GetxController{
     List<AppInfo> installedApps = await InstalledApps.getInstalledApps(excludeNonLaunchableApps: true, excludeSystemApps: false);
     installedApps.sort((a,b)=> a.name.compareTo(b.name));
     apps.value = installedApps;
+    filteredApps.value = installedApps;
     isLoading.value = false;
   }
 
@@ -28,6 +29,8 @@ class HomeController extends GetxController{
 
   void closeAppList(){
     showAppList.value = false;
+    searchQuery.value = '';
+    filteredApps.value = apps;
   }
 
   void filterApps(String query){

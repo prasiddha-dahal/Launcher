@@ -52,6 +52,7 @@ class HomeView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                autofocus: true,
                 style: TextStyle(color: Colors.white, ),
                 onChanged: (query){
                   homeController.filterApps(query);
