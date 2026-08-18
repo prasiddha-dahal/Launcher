@@ -9,40 +9,6 @@ class CustomWidgets {
   final HomeController homeController = Get.put(HomeController());
   final ClockController clockController = Get.put(ClockController());
 
-  static Widget showTopApps() {
-  final HomeController homeController = Get.put(HomeController());
-    return Obx(() {
-      if (homeController.topApps.isEmpty) {
-        return const SizedBox.shrink();
-      }
-      return Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 8),
-            child: Text(
-              'Top 3 apps you used today',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 22,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          ...homeController.topApps.map((app) {
-            final minutes = app.usage.inMinutes;
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text(
-                '${app.appName} — ${(minutes / 60).floor()}hr and ${minutes % 60} mins',
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-              ),
-            );
-          }),
-        ],
-      );
-    });
-  }
-
   static Widget showClock() {
   final ClockController clockController = Get.put(ClockController());
     return Center(
@@ -66,7 +32,6 @@ class CustomWidgets {
             ),
           ),
           Gap(40),
-          showTopApps(),
         ],
       ),
     );

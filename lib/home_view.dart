@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:launcher/clock_controller.dart';
 import 'package:launcher/home_controller.dart';
 import 'widgets/custom_widgets.dart';
 

@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 
 class ClockController extends GetxController {
   var currentTime = ''.obs;
@@ -18,7 +19,28 @@ class ClockController extends GetxController {
   void _updateTime() {
     final now = DateTime.now();
     currentTime.value = DateFormat('hh:mm a').format(now);
-    currentDate.value = DateFormat('EEEE, d MMMM').format(now);
+    final nepaliDate = now.toNepaliDateTime();
+    currentDate.value =
+        '${nepaliDate.day}, ${_getNepaliMonth(nepaliDate.month)}';
+  }
+
+  String _getNepaliMonth(int month) {
+    const months = [
+      'Baisakh',
+      'Jestha',
+      'Ashadh',
+      'Shrawan',
+      'Bhadra',
+      'Ashwin',
+      'Kartik',
+      'Mangsir',
+      'Poush',
+      'Magh',
+      'Falgun',
+      'Chaitra',
+    ];
+
+    return months[month - 1];
   }
 
   @override

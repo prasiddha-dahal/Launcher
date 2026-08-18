@@ -39,6 +39,7 @@ dependencies:
   intl: ^0.20.3
   app_usage: ^4.1.0
   gap: ^3.0.1
+  nepali_utils: ^3.0.8
 
 dev_dependencies:
   flutter_test:
