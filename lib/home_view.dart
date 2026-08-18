@@ -25,6 +25,11 @@ class HomeView extends StatelessWidget {
               homeController.closeAppList(); // swipe down
             }
           },
+          onLongPress: () {
+            if(!homeController.showAppList.value){
+              CustomWidgets.showHiddenAppsSheet(context, homeController);
+            }
+          },
           child: Obx(() {
             return homeController.showAppList.value
                 ? CustomWidgets.showApp()
