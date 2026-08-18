@@ -1,69 +1,83 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
-import 'package:app_usage/app_usage.dart';
-import 'package:launcher/utils/usage_helper.dart';
 
 class HomeController extends GetxController {
-  var isLoading = false.obs;
+  final _box = GetStorage();
+  static const _hiddenAppsKey = 'hiddenApps';
+
   var apps = <AppInfo>[].obs;
   var filteredApps = <AppInfo>[].obs;
+  var hiddenApps = <String>[].obs; // package names
+  var isLoading = true.obs;
   var showAppList = false.obs;
   var searchQuery = ''.obs;
-  var topApps = <AppUsageInfo>[].obs;
 
-  Future loadApp() async {
+  @override
+  void onInit() {
+    super.onInit();
+    _loadHiddenApps();
+    loadApps();
+  }
+
+  void _loadHiddenApps() {
+    final stored = _box.read<List>(_hiddenAppsKey);
+    if (stored != null) {
+      hiddenApps.value = stored.cast<String>();
+    }
+  }
+
+  Future<void> loadApps() async {
     isLoading.value = true;
-    List<AppInfo> installedApps = await InstalledApps.getInstalledApps(
-      excludeNonLaunchableApps: true,
-      excludeSystemApps: false,
-    );
+    List<AppInfo> installedApps = await InstalledApps.getInstalledApps(excludeSystemApps:true , excludeNonLaunchableApps:false );
     installedApps.sort((a, b) => a.name.compareTo(b.name));
     apps.value = installedApps;
-    filteredApps.value = installedApps;
+    _applyVisibility();
     isLoading.value = false;
+  }
+
+  void _applyVisibility() {
+    filteredApps.value = apps
+        .where((app) => !hiddenApps.contains(app.packageName))
+        .toList();
+  }
+
+  void hideApp(String packageName) {
+    if (!hiddenApps.contains(packageName)) {
+      hiddenApps.add(packageName);
+      _box.write(_hiddenAppsKey, hiddenApps);
+      _applyVisibility();
+    }
+  }
+
+  void unhideApp(String packageName) {
+    hiddenApps.remove(packageName);
+    _box.write(_hiddenAppsKey, hiddenApps);
+    _applyVisibility();
   }
 
   void launchApp(String packageName) {
     InstalledApps.startApp(packageName);
   }
 
-  void openAppList() {
-    showAppList.value = true;
-    loadTopApps();
-  }
+  void openAppList() => showAppList.value = true;
 
   void closeAppList() {
     showAppList.value = false;
     searchQuery.value = '';
-    filteredApps.value = apps;
+    _applyVisibility();
   }
 
   void filterApps(String query) {
     searchQuery.value = query;
+    final visibleApps = apps.where((app) => !hiddenApps.contains(app.packageName));
     if (query.isEmpty) {
-      filteredApps.value = apps;
+      filteredApps.value = visibleApps.toList();
     } else {
-      filteredApps.value = apps
+      filteredApps.value = visibleApps
           .where((app) => app.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     }
-  }
-
-  Future<void> loadTopApps() async {
-    try {
-      final result = await getTopUsedAppsToday(limit: 3);
-      topApps.value = result;
-    } catch (e) {
-      topApps.value = [];
-    }
-  }
-
-  @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-    loadApp();
-    loadTopApps();
   }
 }

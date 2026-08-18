@@ -5,12 +5,11 @@ import 'package:launcher/clock_controller.dart';
 import 'package:launcher/home_controller.dart';
 
 class CustomWidgets {
-
   final HomeController homeController = Get.put(HomeController());
   final ClockController clockController = Get.put(ClockController());
 
   static Widget showClock() {
-  final ClockController clockController = Get.put(ClockController());
+    final ClockController clockController = Get.put(ClockController());
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -38,7 +37,7 @@ class CustomWidgets {
   }
 
   static Widget showApp() {
-  final HomeController homeController = Get.put(HomeController());
+    final HomeController homeController = Get.put(HomeController());
     return Obx(() {
       if (homeController.isLoading.value) {
         return Center(
@@ -86,6 +85,31 @@ class CustomWidgets {
                       style: const TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     onTap: () => homeController.launchApp(app.packageName),
+                    onLongPress: () {
+                      Get.bottomSheet(
+                        Container(
+                          color: Colors.grey[900],
+                          child: Wrap(
+                            children: [
+                              ListTile(
+                                leading: const Icon(
+                                  Icons.visibility_off,
+                                  color: Colors.white,
+                                ),
+                                title: const Text(
+                                  'Hide app',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onTap: () {
+                                  homeController.hideApp(app.packageName);
+                                  Get.back(); // close bottom sheet
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
