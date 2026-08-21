@@ -105,6 +105,37 @@ class CustomWidgets {
                                   Get.back(); // close bottom sheet
                                 },
                               ),
+                               ListTile(
+                                leading: const Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
+                                title: const Text(
+                                  'Set as Left Swipe',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onTap: () {
+                                  homeController.setSwipeLeftApp(app.packageName);
+                                  Get.back(); // close bottom sheet
+                                },
+                              ),
+                               ListTile(
+                                leading: const Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.white,
+                                ),
+                                title: const Text(
+                                  'Set as Right Swipe',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onTap: () {
+                                  homeController.setSwipeRightApp(app.packageName);
+                                  Get.back(); // close bottom sheet
+                                },
+                              ),
+
+
+
                             ],
                           ),
                         ),

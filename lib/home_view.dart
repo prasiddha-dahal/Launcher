@@ -25,8 +25,24 @@ class HomeView extends StatelessWidget {
               homeController.closeAppList(); // swipe down
             }
           },
+          onHorizontalDragEnd: (details) {
+            if (homeController.showAppList.value) return; 
+            if (details.primaryVelocity == null) return;
+
+            if (details.primaryVelocity! < -200) {
+              // swiped left
+              if (homeController.swipeLeftApp.value.isNotEmpty) {
+                homeController.launchApp(homeController.swipeLeftApp.value);
+              }
+            } else if (details.primaryVelocity! > 200) {
+              // swiped right
+              if (homeController.swipeRightApp.value.isNotEmpty) {
+                homeController.launchApp(homeController.swipeRightApp.value);
+              }
+            }
+          },
           onLongPress: () {
-            if(!homeController.showAppList.value){
+            if (!homeController.showAppList.value) {
               CustomWidgets.showHiddenAppsSheet(context, homeController);
             }
           },
