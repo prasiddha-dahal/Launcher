@@ -6,6 +6,8 @@ import 'package:installed_apps/installed_apps.dart';
 class HomeController extends GetxController {
   final _box = GetStorage();
   static const _hiddenAppsKey = 'hiddenApps';
+  static const _swipeLeftAppkey = 'swipeLeftApp';
+  static const _swipeRightAppkey = 'swipeRightApp';
 
   var apps = <AppInfo>[].obs;
   var filteredApps = <AppInfo>[].obs;
@@ -13,11 +15,14 @@ class HomeController extends GetxController {
   var isLoading = true.obs;
   var showAppList = false.obs;
   var searchQuery = ''.obs;
+  var swipeLeftApp = ''.obs;
+  var swipeRightApp = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadHiddenApps();
+    _loadSwipeApp();
     loadApps();
   }
 
@@ -30,11 +35,29 @@ class HomeController extends GetxController {
 
   Future<void> loadApps() async {
     isLoading.value = true;
-    List<AppInfo> installedApps = await InstalledApps.getInstalledApps(excludeSystemApps:true , excludeNonLaunchableApps:false );
+    List<AppInfo> installedApps = await InstalledApps.getInstalledApps(
+      excludeSystemApps: false,
+      excludeNonLaunchableApps: true,
+    );
     installedApps.sort((a, b) => a.name.compareTo(b.name));
     apps.value = installedApps;
     _applyVisibility();
     isLoading.value = false;
+  }
+
+  void _loadSwipeApp(){
+    swipeLeftApp.value = _box.read(_swipeLeftAppkey) ?? '';
+    swipeRightApp.value = _box.read(_swipeRightAppkey) ?? '';
+  }
+
+  void setSwipeLeftApp(String packageName) {
+    swipeLeftApp.value = packageName;
+    _box.write(_swipeLeftAppkey, packageName);
+  }
+
+  void setSwipeRightApp(String packageName) {
+    swipeRightApp.value = packageName;
+    _box.write(_swipeRightAppkey, packageName);
   }
 
   void _applyVisibility() {
@@ -71,7 +94,9 @@ class HomeController extends GetxController {
 
   void filterApps(String query) {
     searchQuery.value = query;
-    final visibleApps = apps.where((app) => !hiddenApps.contains(app.packageName));
+    final visibleApps = apps.where(
+      (app) => !hiddenApps.contains(app.packageName),
+    );
     if (query.isEmpty) {
       filteredApps.value = visibleApps.toList();
     } else {

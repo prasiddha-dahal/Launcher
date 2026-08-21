@@ -124,6 +124,7 @@ class CustomWidgets {
   Get.bottomSheet(
     Container(
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+      width: double.infinity,
       decoration: const BoxDecoration(
         color: Color.fromARGB(255, 24, 23, 23),
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
